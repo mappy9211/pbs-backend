@@ -32,6 +32,9 @@ uploads_dir = "uploads"
 if not os.path.exists(uploads_dir):
     os.makedirs(uploads_dir, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
+# Also mount uploads under /mobile/uploads to support mobile clients
+# that use a BASE_API_URL including the /mobile prefix.
+app.mount("/mobile/uploads", StaticFiles(directory=uploads_dir), name="mobile-uploads")
 
 def get_db():
     db = SessionLocal()

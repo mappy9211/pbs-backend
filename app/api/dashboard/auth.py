@@ -83,6 +83,9 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
     user = authenticate_user(db, payload.user_name, payload.password)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
+    # Only allow active users to login
+    if not getattr(user, 'active', True):
+        raise HTTPException(status_code=403, detail="User account is inactive")
     token = create_access_token({"user_id": str(user.user_id), "role": user.role})
     user.auth_token = token
     db.commit()
